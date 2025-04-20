@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'logs.dart';
 import 'bt_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -34,15 +37,30 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    _loadStepCount();
 
     Future.delayed(Duration.zero, () {
       widget.bluetoothService.scanAndConnect();
       widget.bluetoothService.onStepCountReceived = (int steps) {
+        _saveStepCount(steps);
         setState(() {
           stepCount = steps;
         });
       };
     });
+  }
+
+  void _loadStepCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedSteps = prefs.getInt('lastStepCount') ?? 0;
+    setState(() {
+      stepCount = savedSteps;
+    });
+  }
+
+  void _saveStepCount(int steps) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('lastStepCount', steps);
   }
 
   @override
