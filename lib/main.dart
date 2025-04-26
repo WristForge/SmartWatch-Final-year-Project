@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'logs.dart';
 import 'bt_service.dart';
+import 'settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,8 +66,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    widget.bluetoothService
-        .disconnect(); // ✅ Ensure Bluetooth disconnects properly
+    widget.bluetoothService.disconnect();
     super.dispose();
   }
 
@@ -81,7 +81,9 @@ class _MainScreenState extends State<MainScreen> {
     List<Widget> _pages = [
       HomeScreen(stepCount: stepCount),
       LogsScreen(),
-      SettingsScreen(),
+      SettingsScreen(
+          bluetoothService:
+              widget.bluetoothService), // ✅ Now uses the full-featured screen
     ];
 
     return Scaffold(
@@ -177,19 +179,6 @@ class StatCard extends StatelessWidget {
           SizedBox(height: 10),
           Text(value, style: TextStyle(fontSize: 22, color: Colors.white)),
         ],
-      ),
-    );
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Text('Settings Screen',
-            style: TextStyle(color: Colors.white, fontSize: 24)),
       ),
     );
   }
