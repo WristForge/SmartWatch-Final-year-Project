@@ -35,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (isBluetoothOn) {
       widget.bluetoothService.scanAndConnect();
     } else {
-      widget.bluetoothService.disconnect();
+      //widget.bluetoothService.disconnect();
     }
   }
 
@@ -64,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (value) {
       widget.bluetoothService.scanAndConnect();
     } else {
-      widget.bluetoothService.disconnect();
+      //widget.bluetoothService.disconnect();
     }
   }
 
