@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
 
     <application
         android:label="wristforge_app"
@@ -37,6 +39,20 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+         <service
+        android:name=".BluetoothService"
+        android:permission="android.permission.BLUETOOTH_ADMIN"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+        </intent-filter>
+
+        <!-- Define the notification channel -->
+        <meta-data
+            android:name="android.app.notification_channel"
+            android:value="@string/notification_channel_id" />
+    </service>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
