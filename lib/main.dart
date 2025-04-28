@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'logs.dart';
 import 'bt_service.dart';
 import 'settings.dart';
@@ -21,8 +23,27 @@ void main() async {
   runApp(MyApp(bluetoothService: bluetoothService));
 }
 
+const notificationChannelId = 'my_foreground';
+const notificationId = 888;
+
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
+
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    notificationChannelId, // id
+    'MY FOREGROUND SERVICE', // title
+    description:
+        'This channel is used for important notifications.', // description
+    importance: Importance.low, // importance must be at low or higher level
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
 
   await service.configure(
     androidConfiguration: AndroidConfiguration(
@@ -33,10 +54,10 @@ Future<void> initializeService() async {
         AndroidForegroundType.dataSync,
         AndroidForegroundType.connectedDevice
       ],
-      notificationChannelId: 'my_foreground',
+      notificationChannelId: notificationChannelId,
       initialNotificationTitle: 'Wrist Forge Running',
       initialNotificationContent: 'Monitoring Bluetooth data...',
-      foregroundServiceNotificationId: 456789,
+      foregroundServiceNotificationId: notificationId,
     ),
     iosConfiguration: IosConfiguration(
       onForeground: onStart,
@@ -50,6 +71,29 @@ Future<void> initializeService() async {
 // This is what runs in background
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
+  /*final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Timer.periodic(const Duration(seconds: 5), (timer) async {
+    if (service is AndroidServiceInstance) {
+      if (await service.isForegroundService()) {
+        flutterLocalNotificationsPlugin.show(
+          notificationId,
+          'COOL SERVICE',
+          'Awesome ${DateTime.now()}',
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              notificationChannelId,
+              'MY FOREGROUND SERVICE',
+              icon: 'ic_bg_service_small',
+              ongoing: true,
+            ),
+          ),
+        );
+      }
+    }
+  });*/
+
   await Firebase.initializeApp();
 
   BluetoothService bluetoothService = BluetoothService.instance;
