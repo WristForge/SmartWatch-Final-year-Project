@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'logs/health_logs.dart';
+import 'logs/step_logs.dart';
+import 'logs/environment_logs.dart';
 
 class LogsScreen extends StatelessWidget {
   @override
@@ -35,25 +38,36 @@ class LogsScreen extends StatelessWidget {
               children: [
                 LogFieldBox(
                   icon: Icons.favorite,
-                  title: 'Heart Rate Logs',
+                  title: 'Health Logs',
                   onTap: () {
-                    // Navigate to Heart Rate Logs
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HealthLogsScreen()),
+                    );
                   },
                 ),
                 SizedBox(height: 20),
                 LogFieldBox(
                   icon: Icons.directions_walk,
-                  title: 'Step Count Logs',
+                  title: 'Step Logs',
                   onTap: () {
-                    // Navigate to Step Count Logs
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StepLogsScreen()),
+                    );
                   },
                 ),
                 SizedBox(height: 20),
                 LogFieldBox(
-                  icon: Icons.security,
-                  title: 'Attack Logs',
+                  icon: Icons.public,
+                  title: 'Environment Logs',
                   onTap: () {
-                    // Navigate to Attack Logs
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EnvironmentLogsScreen()),
+                    );
                   },
                 ),
               ],
