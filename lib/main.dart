@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'logs.dart';
 import 'bt_service.dart';
 import 'settings.dart';
@@ -17,8 +16,6 @@ void main() async {
 
   // Start Bluetooth Service once at app launch
   BluetoothService bluetoothService = BluetoothService();
-  //await bluetoothService
-  //.startBluetoothService(); // Make sure this is awaited if needed
 
   runApp(MyApp(bluetoothService: bluetoothService));
 }
@@ -71,29 +68,6 @@ Future<void> initializeService() async {
 // This is what runs in background
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  /*final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  Timer.periodic(const Duration(seconds: 5), (timer) async {
-    if (service is AndroidServiceInstance) {
-      if (await service.isForegroundService()) {
-        flutterLocalNotificationsPlugin.show(
-          notificationId,
-          'COOL SERVICE',
-          'Awesome ${DateTime.now()}',
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              notificationChannelId,
-              'MY FOREGROUND SERVICE',
-              icon: 'ic_bg_service_small',
-              ongoing: true,
-            ),
-          ),
-        );
-      }
-    }
-  });*/
-
   await Firebase.initializeApp();
 
   BluetoothService bluetoothService = BluetoothService.instance;
@@ -207,7 +181,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    // widget.bluetoothService.disconnect();
+    widget.bluetoothService.disconnect();
     super.dispose();
   }
 

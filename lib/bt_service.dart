@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-//import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:bluetooth_classic/models/device.dart';
 
 class BluetoothService {
@@ -277,32 +276,7 @@ class BluetoothService {
     await prefs.setInt('heart_rate', bpm);
   }
 
-  /*static void onStartService(ServiceInstance service) {
-    final bluetoothService = BluetoothService();
-    bluetoothService.scanAndConnect();
+  Future<void> disconnect() async {
+    await bluetooth.disconnect();
   }
-
-  Future<void> startBluetoothService() async {
-    final service = FlutterBackgroundService();
-    service.configure(
-      androidConfiguration: AndroidConfiguration(
-        onStart: onStartService,
-        autoStart: true,
-        isForegroundMode: true,
-        foregroundServiceTypes: [
-          AndroidForegroundType.dataSync,
-          AndroidForegroundType.connectedDevice
-        ],
-        initialNotificationContent: 'Preparing...',
-        initialNotificationTitle: 'Smartwatch Bluetooth Service',
-        notificationChannelId: 'smartwatch_bluetooth_service_channel',
-        foregroundServiceNotificationId: 123456,
-      ),
-      iosConfiguration: IosConfiguration(
-        autoStart: true,
-        onForeground: onStartService,
-      ),
-    );
-    service.startService();
-  }*/
 }
