@@ -15,8 +15,8 @@ void main() async {
 
   // Start Bluetooth Service once at app launch
   BluetoothService bluetoothService = BluetoothService();
-  await bluetoothService
-      .startBluetoothService(); // Make sure this is awaited if needed
+  //await bluetoothService
+  //.startBluetoothService(); // Make sure this is awaited if needed
 
   runApp(MyApp(bluetoothService: bluetoothService));
 }
@@ -29,9 +29,14 @@ Future<void> initializeService() async {
       onStart: onStart,
       isForegroundMode: true,
       autoStart: true,
+      foregroundServiceTypes: [
+        AndroidForegroundType.dataSync,
+        AndroidForegroundType.connectedDevice
+      ],
       notificationChannelId: 'my_foreground',
       initialNotificationTitle: 'Wrist Forge Running',
       initialNotificationContent: 'Monitoring Bluetooth data...',
+      foregroundServiceNotificationId: 456789,
     ),
     iosConfiguration: IosConfiguration(
       onForeground: onStart,
@@ -44,12 +49,16 @@ Future<void> initializeService() async {
 
 // This is what runs in background
 @pragma('vm:entry-point')
-void onStart(ServiceInstance service) {
+void onStart(ServiceInstance service) async {
+  await Firebase.initializeApp();
+
+  BluetoothService bluetoothService = BluetoothService.instance;
+
+  await bluetoothService.scanAndConnect();
+
   service.on('stopService').listen((event) {
     service.stopSelf();
   });
-
-  // You can periodically do tasks here (e.g., reconnect Bluetooth if needed)
 }
 
 class MyApp extends StatelessWidget {

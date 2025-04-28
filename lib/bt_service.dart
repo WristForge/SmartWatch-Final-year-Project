@@ -4,13 +4,19 @@ import 'dart:typed_data';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+//import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:bluetooth_classic/models/device.dart';
 
 class BluetoothService {
   final bluetooth = BluetoothClassic();
   final DatabaseReference database =
       FirebaseDatabase.instance.ref("smartwatch_data");
+
+  static final BluetoothService instance = BluetoothService._internal();
+
+  BluetoothService._internal();
+
+  factory BluetoothService() => instance;
 
   String _buffer = "";
   int _currentHourlyStepCount = 0;
@@ -271,7 +277,7 @@ class BluetoothService {
     await prefs.setInt('heart_rate', bpm);
   }
 
-  static void onStartService(ServiceInstance service) {
+  /*static void onStartService(ServiceInstance service) {
     final bluetoothService = BluetoothService();
     bluetoothService.scanAndConnect();
   }
@@ -283,7 +289,10 @@ class BluetoothService {
         onStart: onStartService,
         autoStart: true,
         isForegroundMode: true,
-        foregroundServiceTypes: [AndroidForegroundType.dataSync],
+        foregroundServiceTypes: [
+          AndroidForegroundType.dataSync,
+          AndroidForegroundType.connectedDevice
+        ],
         initialNotificationContent: 'Preparing...',
         initialNotificationTitle: 'Smartwatch Bluetooth Service',
         notificationChannelId: 'smartwatch_bluetooth_service_channel',
@@ -295,5 +304,5 @@ class BluetoothService {
       ),
     );
     service.startService();
-  }
+  }*/
 }

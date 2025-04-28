@@ -1,3 +1,3 @@
 <resources>
-    <string name="notification_channel_id">smartwatch_bluetooth_service_channel</string>
+    <string name="notification_channel_id">my_foreground</string>
 </resources>

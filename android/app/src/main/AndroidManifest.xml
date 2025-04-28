@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" tools:ignore="BluetoothPermission" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" tools:ignore="BluetoothPermission" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
 
     <application
@@ -43,7 +44,7 @@
 
          <service
     android:name="id.flutter.flutter_background_service.BackgroundService"
-    android:foregroundServiceType="dataSync" />
+    android:foregroundServiceType="dataSync|connectedDevice" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
