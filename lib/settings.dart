@@ -18,7 +18,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool stepNotifications = true;
   bool heartRateNotifications = true;
-  bool isDarkMode = true;
   bool isBluetoothOn = true;
 
   @override
@@ -32,7 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       stepNotifications = prefs.getBool('stepNotifications') ?? true;
       heartRateNotifications = prefs.getBool('heartRateNotifications') ?? true;
-      isDarkMode = prefs.getBool('darkMode') ?? true;
       isBluetoothOn = prefs.getBool('bluetooth') ?? true;
     });
 
@@ -54,11 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _toggleDarkMode(bool value) {
-    setState(() => isDarkMode = value);
-    _updatePreference('darkMode', value);
-  }
-
   void _toggleBluetooth(bool value) {
     setState(() => isBluetoothOn = value);
     _updatePreference('bluetooth', value);
@@ -73,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _exportLogs() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+      backgroundColor: Colors.grey[900],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -82,75 +75,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: Icon(Icons.bloodtype,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export SpO₂ Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('spo2_readings');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.favorite,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export Heart Rate Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('heart_rate_readings');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.directions_walk,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export Step Count Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('step_counts');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.thermostat,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export Temperature Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('temperature_readings');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.compress,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export Pressure Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('pressure_readings');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.landscape,
-                    color: isDarkMode ? Colors.white : Colors.black),
-                title: Text('Export Altitude Logs',
-                    style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportSpecificLogs('altitude_readings');
-                },
-              ),
+              _buildExportTile(
+                  Icons.bloodtype, 'Export SpO₂ Logs', 'spo2_readings'),
+              _buildExportTile(Icons.favorite, 'Export Heart Rate Logs',
+                  'heart_rate_readings'),
+              _buildExportTile(Icons.directions_walk, 'Export Step Count Logs',
+                  'step_counts'),
+              _buildExportTile(Icons.thermostat, 'Export Temperature Logs',
+                  'temperature_readings'),
+              _buildExportTile(
+                  Icons.compress, 'Export Pressure Logs', 'pressure_readings'),
+              _buildExportTile(
+                  Icons.landscape, 'Export Altitude Logs', 'altitude_readings'),
             ],
           ),
         );
+      },
+    );
+  }
+
+  ListTile _buildExportTile(IconData icon, String title, String logType) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: TextStyle(color: Colors.white)),
+      onTap: () {
+        Navigator.pop(context);
+        _exportSpecificLogs(logType);
       },
     );
   }
@@ -221,25 +171,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text('Settings'),
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        backgroundColor: Colors.black,
         elevation: 0,
-        iconTheme: IconThemeData(
-          color: isDarkMode ? Colors.white : Colors.black,
-        ),
-        titleTextStyle: TextStyle(
-          color: isDarkMode ? Colors.white : Colors.black,
-          fontSize: 20,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
       body: ListView(
         children: [
           SwitchListTile(
             title: Text('Step Count Notifications',
-                style:
-                    TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+                style: TextStyle(color: Colors.white)),
             value: stepNotifications,
             onChanged: (value) {
               setState(() => stepNotifications = value);
@@ -248,8 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SwitchListTile(
             title: Text('Heart Rate Alerts',
-                style:
-                    TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+                style: TextStyle(color: Colors.white)),
             value: heartRateNotifications,
             onChanged: (value) {
               setState(() => heartRateNotifications = value);
@@ -257,25 +200,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           SwitchListTile(
-            title: Text('Bluetooth',
-                style:
-                    TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+            title: Text('Bluetooth', style: TextStyle(color: Colors.white)),
             value: isBluetoothOn,
             onChanged: _toggleBluetooth,
           ),
-          SwitchListTile(
-            title: Text('Dark Mode',
-                style:
-                    TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
-            value: isDarkMode,
-            onChanged: _toggleDarkMode,
-          ),
           ListTile(
-            title: Text('Export Logs',
-                style:
-                    TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
-            leading: Icon(Icons.download,
-                color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('Export Logs', style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.download, color: Colors.white),
             onTap: _exportLogs,
           ),
           ListTile(
@@ -283,14 +214,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(color: Colors.redAccent)),
             onTap: _clearStepCount,
           ),
-          Divider(color: isDarkMode ? Colors.white24 : Colors.black26),
+          Divider(color: Colors.white24),
           ListTile(
             title: Text('App Version 1.0.0',
-                style: TextStyle(
-                    color: isDarkMode ? Colors.white70 : Colors.black54)),
+                style: TextStyle(color: Colors.white70)),
             subtitle: Text('Wrist Forge - Final Year Project',
-                style: TextStyle(
-                    color: isDarkMode ? Colors.white30 : Colors.black26)),
+                style: TextStyle(color: Colors.white30)),
           ),
         ],
       ),

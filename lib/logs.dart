@@ -11,11 +11,14 @@ class LogsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        leading: Placeholder(), // Placeholder for logo
+        automaticallyImplyLeading: false, // Removes default back arrow if any
         actions: [
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Image.asset(
+              'assets/watch.png',
+              height: 40, // Adjust size as needed
+            ),
           ),
         ],
       ),

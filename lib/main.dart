@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
 import 'logs.dart';
 import 'bt_service.dart';
 import 'settings.dart';
@@ -10,6 +12,12 @@ import 'settings.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Lock orientation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Initialize Background Service
   await initializeService();
@@ -267,12 +275,12 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final double? temperature;
   final double? pressure;
   final double? altitude;
   final int? heartRate;
-  final double? spo2; // SpO2 as double
+  final double? spo2;
   final int? stepCount;
 
   HomeScreen({
@@ -285,28 +293,58 @@ class HomeScreen extends StatelessWidget {
   });
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Timer _timer;
+  late DateTime _currentTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTime = DateTime.now();
+
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    String formattedTime =
+        "${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}";
+    String formattedDate =
+        "${_getWeekday(_currentTime.weekday)}, ${_getMonth(_currentTime.month)} ${_currentTime.day}";
+
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Placeholder(), // You can replace this with your app logo
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {},
-          ),
-        ],
         backgroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/watch.png', // Make sure you add your logo under assets folder
+              height: 40,
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '12:45 PM', // You can update this dynamically if needed
+              formattedTime,
               style: TextStyle(
                 fontSize: 60,
                 color: Colors.black,
@@ -315,7 +353,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'Monday, December 16', // You can update this dynamically too
+              formattedDate,
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
             SizedBox(height: 40),
@@ -326,35 +364,39 @@ class HomeScreen extends StatelessWidget {
               children: [
                 StatCard(
                   icon: Icons.thermostat,
-                  value: temperature != null
-                      ? '${temperature!.toStringAsFixed(1)} °C'
+                  value: widget.temperature != null
+                      ? '${widget.temperature!.toStringAsFixed(1)} °C'
                       : '-- °C',
                 ),
                 StatCard(
                   icon: Icons.cloud,
-                  value: pressure != null
-                      ? '${pressure!.toStringAsFixed(1)} hPa'
+                  value: widget.pressure != null
+                      ? '${widget.pressure!.toStringAsFixed(1)} hPa'
                       : '-- hPa',
                 ),
                 StatCard(
                   icon: Icons.height,
-                  value: altitude != null
-                      ? '${altitude!.toStringAsFixed(1)} m'
+                  value: widget.altitude != null
+                      ? '${widget.altitude!.toStringAsFixed(1)} m'
                       : '-- m',
                 ),
                 StatCard(
                   icon: Icons.favorite,
-                  value: heartRate != null ? '$heartRate bpm' : '-- bpm',
+                  value: widget.heartRate != null
+                      ? '${widget.heartRate} bpm'
+                      : '-- bpm',
                 ),
                 StatCard(
                   icon: Icons.bloodtype,
-                  value: spo2 != null
-                      ? '${spo2!.toStringAsFixed(1)} %'
-                      : '-- %', // Display SpO2 as double
+                  value: widget.spo2 != null
+                      ? '${widget.spo2!.toStringAsFixed(1)} %'
+                      : '-- %',
                 ),
                 StatCard(
                   icon: Icons.directions_walk,
-                  value: stepCount != null ? '$stepCount steps' : '-- steps',
+                  value: widget.stepCount != null
+                      ? '${widget.stepCount} steps'
+                      : '-- steps',
                 ),
               ],
             ),
@@ -362,6 +404,37 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getWeekday(int weekday) {
+    const weekdays = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    return weekdays[weekday - 1];
+  }
+
+  String _getMonth(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    return months[month - 1];
   }
 }
 
