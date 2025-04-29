@@ -48,7 +48,7 @@ class _TemperatureLogsScreenState extends State<TemperatureLogsScreen> {
       data.forEach((key, value) {
         final reading = value as Map;
         final timestamp = reading['timestamp'] as String;
-        final temperature = reading['temperature_celcius'].toDouble();
+        final temperature = reading['temperature_celsius'].toDouble();
 
         if (temperature != null) {
           DateTime parsedTimestamp = DateTime.parse(timestamp);

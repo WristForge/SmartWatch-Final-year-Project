@@ -47,7 +47,7 @@ class _HeartRateLogsScreenState extends State<HeartRateLogsScreen> {
       data.forEach((key, value) {
         final reading = value as Map;
         final timestamp = reading['timestamp'] as String;
-        final bpm = reading['bpm'];
+        final bpm = reading['heart_rate_bpm'].toDouble();
 
         if (bpm != null) {
           DateTime parsedTimestamp = DateTime.parse(timestamp);
